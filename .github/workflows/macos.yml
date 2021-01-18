@@ -1,0 +1,20 @@
+on: [push]
+
+jobs:
+  test_macos_clipboard:
+    name: test clipboard functionality on macos
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Install python
+        run: brew install python@3.8
+
+      - name: install
+        run: python3.8 -m pip install . && pip install pytest
+
+      - name: run tests
+        run: python3.8 -m pytest -v
+
