@@ -2,6 +2,7 @@ import sys, os
 try:
     import pyperclip3 as clip
 except ImportError:
+    # XXX: probably shouldn't do this, but oh well ¯\_(ツ)_/¯
     sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
     import pyperclip3 as clip
 
