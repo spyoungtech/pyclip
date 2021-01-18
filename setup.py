@@ -14,7 +14,7 @@ else:
 
 setup(
     name='pyperclip3',
-    version='0.1.0',
+    version='0.1.1',
     url='https://github.com/spyoungtech/pyperclip3',
     description='Cross-platform clipboard utilities supporting both binary and text data.',
     long_description=long_description,
@@ -33,4 +33,5 @@ setup(
         'Programming Language :: Python :: 3.9',
     ],
     tests_require=test_requirements,
+    keywords='pyperclip clipboard cross-platform binary bytes files'
 )
