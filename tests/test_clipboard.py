@@ -21,6 +21,12 @@ def test_copypaste_unicode():
     assert clip.paste().decode() == unicode
 
 
+def test_copy_paste_arbitrary_data():
+    import secrets
+    randbytes = secrets.token_bytes(1024)
+    clip.copy(randbytes)
+    assert clip.paste() == randbytes
+
 def test_clear():
     clip.copy('foo')
     assert clip.paste(), 'test setup failed; clipboard contents unexpectedly empty'
