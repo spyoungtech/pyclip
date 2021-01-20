@@ -135,14 +135,13 @@ class WindowsClipboard(ClipboardBase):
             clip.EmptyClipboard()
         return
 
-
     def _handle_format(self, fmt, data):
         if fmt == 15:
             return self._handle_hdrop(data)
         else:
             raise ValueError(f"Unknown format: {fmt}")
 
-    def _handle_hdrop(self, data):
+    def _handle_hdrop(self, data: Tuple[str, ]) -> bytes:
         if not isinstance(data, tuple):
             raise TypeError(f"Unexpected type for HDROP. Data must be tuple, not {type(data)}")
         if len(data) > 1:
