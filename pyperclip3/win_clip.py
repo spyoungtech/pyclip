@@ -1,8 +1,11 @@
 import shutil
 import warnings
 from typing import Union
+from queue import Queue
+import threading
 import subprocess
 from tkinter import Tk
+import ctypes
 from contextlib import contextmanager
 from .base import ClipboardBase, ClipboardSetupException, ClipboardException
 try:
@@ -12,77 +15,102 @@ except ImportError:
     _win32clipboard = None
     _win32con = None
 
+_CF_FORMATS = {
+    value: name
+    for name, value in ((n, getattr(_win32clipboard, n)) for n in dir(_win32clipboard) if n.startswith('CF_'))
+}
 
 
-# @contextmanager
-# def tk_context():
-#         r = Tk()
-#         r.withdraw()
-#         try:
-#             yield r
-#         finally:
-#             r.update()
-#             r.destroy()
+
+class _Win32Clipboard:
+    def __init__(self):
+        self._clip_queue = Queue()
+        self._clip = _win32clipboard
+
+    def __enter__(self):
+        return self.open()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
+    def open(self):
+        self._clip.OpenClipboard()
+        return self._clip
+
+    def close(self):
+        import pywintypes
+        try:
+            self._clip.CloseClipboard()
+        except pywintypes.error as e:
+            if e.winerror == 1418:
+                return
+            raise
+
+
+    def _enumerate_clipboard_formats(self):
+        formats = []
+        with self.clip() as clip:
+            fmt = clip.EnumClipboardFormats()
+            formats.append(fmt)
+            while True:
+                fmt = clip.EnumClipboardFormats(fmt)
+                if fmt == 0:
+                    break
+                formats.append(fmt)
+        return formats
+
+
 
 class WindowsClipboard(ClipboardBase):
     def __init__(self):
+        self ._clip_lock = threading.Lock()
         if _win32clipboard is None or _win32con is None:
             raise ClipboardSetupException("pywin32 must be installed to use this library on Windows platform.")
-        self.__clipboard = _win32clipboard
-        self._clip = shutil.which('clip')
-        if not self._clip:
-            raise ClipboardSetupException("Can't find `clip.exe`")
-    #
-    # def paste(self):
-    #     with tk_context() as context:
-    #         clipboard_text = context.clipboard_get()
-    #     return clipboard_text
-    # #
+        self._clipboard = _Win32Clipboard()
 
     @property
-    @contextmanager
-    def _clipboard(self):
-        self.__clipboard.OpenClipboard()
-        try:
-            yield self.__clipboard
-        finally:
-            self.__clipboard.CloseClipboard()
+    def _string_formats(self):
+        return 1, 13, 0x0081
 
 
 
     def copy(self, data, encoding=None):
         """Copy given string into system clipboard."""
-        args = ['clip']
-        if isinstance(data, bytes):
-            if encoding is not None:
-                warnings.warn("encoding specified with a bytes argument. "
-                              "Encoding option will be ignored. "
-                              "To remove this warning, omit the encoding parameter or specify it as None", stacklevel=2)
-            proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding=encoding)
-        elif isinstance(data, str):
-            proc = subprocess.Popen(args, stdin=subprocess.PIPE,
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE,
-                                    text=True, encoding=encoding)
-        else:
-            raise ClipboardException(f"data must be of type str or bytes. got {type(data)}")
-
-        if data:
-            stdout, stderr = proc.communicate(data)
-        else:
-            stdout, stderr = proc.communicate()
-        if proc.returncode != 0:
-            raise ClipboardException(f"Copy failed. clip returned code: {proc.returncode!r} "
-                                     f"Stderr: {stderr!r} "
-                                     f"Stdout: {stdout!r}")
+        with self._clipboard as clip:
+            clip.EmptyClipboard()  # we clear the clipboard to become the clipboard owner
+            if isinstance(data, str):
+                clip.SetClipboardText(data, 13)
+            elif isinstance(data, bytes):
+                data = ctypes.create_string_buffer(data)
+                clip.SetClipboardData(1, data)
 
     def clear(self):
-        self.copy(b'')
+        with self._clipboard as clip:
+            clip.EmptyClipboard()
         return
 
-    def paste(self):
+
+    def paste(self, encoding=None, text=None, errors=None) -> Union[str, bytes]:
         """
         Returns clipboard contents"""
         with self._clipboard as clip:
-            d = clip.GetClipboardData(_win32con.CF_UNICODETEXT)
-            return d
+            format = clip.EnumClipboardFormats()
+            print(format)
+            if format == 0:
+                if text or encoding or errors:
+                    return ''
+                else:
+                    return b''
+            d = clip.GetClipboardData(format)
+        if isinstance(d, bytes) and (text or encoding or errors):
+            if format in self._string_formats:
+                d = d.rstrip(b'\x00')  # string formats are null-terminated
+            encoding = encoding or 'utf-8'
+            errors = errors or 'strict'
+            d = d.decode(errors=errors, encoding=encoding)
+        elif isinstance(d, str):
+            if format in self._string_formats:
+                d = d.rstrip('\x00')  # string formats are null-terminated
+            if not (text or encoding or errors):
+                return d.encode('utf-8')
+        return d

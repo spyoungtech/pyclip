@@ -15,8 +15,15 @@ def test_copypaste():
     assert clip.paste(text=True) == 'foo'
 
 
+def test_copypaste_unicode():
+    unicode = 'א ב ג ד ה ו ז ח ט י ך כ ל ם מ ן נ ס ע ף פ ץ צ ק ר ש ת װ ױ'
+    clip.copy(unicode)
+    assert clip.paste().decode() == unicode
+
+
 def test_clear():
     clip.copy('foo')
     assert clip.paste(), 'test setup failed; clipboard contents unexpectedly empty'
     clip.clear()
-    assert not clip.paste(), 'clipboard contents unexpectly present'
+    data = clip.paste()
+    assert not data, f'clipboard contents unexpectly present: {repr(data)}'

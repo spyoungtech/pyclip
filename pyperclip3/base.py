@@ -14,7 +14,7 @@ class ClipboardBase(ABC):
         return NotImplemented
 
     @abstractmethod
-    def paste(self, encoding=None, universal_newlines=None, text=None) -> Union[str, bytes]:
+    def paste(self, encoding=None, text=None, errors=None) -> Union[str, bytes]:
         return NotImplemented
 
     @abstractmethod
