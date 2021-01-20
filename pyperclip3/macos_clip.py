@@ -74,6 +74,9 @@ class MacOSClip(ClipboardBase):
         :return: the clipboard contents. return type is binary by default. If encoding or errors or text are specified,
         the result is str
         """
+        # TODO: pbpaste (and maybe even pbcopy) does not support binary data.
+        #  We should replace it with a solution that works with any data
+
         args = [self.pbpaste]
         if encoding or text or errors:
             completed_proc = subprocess.run(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,

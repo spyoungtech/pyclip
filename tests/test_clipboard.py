@@ -5,7 +5,7 @@ except ImportError:
     # XXX: probably shouldn't do this, but oh well ¯\_(ツ)_/¯
     sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
     import pyperclip3 as clip
-
+import pytest
 
 
 def test_copypaste():
@@ -21,6 +21,7 @@ def test_copypaste_unicode():
     assert clip.paste().decode() == unicode
 
 
+@pytest.mark.xfail(sys.platform == 'darwin', reason="MacOS doesn't yet support arbitrary data", strict=True)
 def test_copy_paste_arbitrary_data():
     import secrets
     randbytes = secrets.token_bytes(1024)
