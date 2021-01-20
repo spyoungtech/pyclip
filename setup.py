@@ -10,7 +10,7 @@ with open('README.md', encoding='utf-8') as f:
 
 setup(
     name='pyperclip3',
-    version='0.2.0',
+    version='0.2.1',
     license='Apache',
     url='https://github.com/spyoungtech/pyperclip3',
     description='Cross-platform clipboard utilities supporting both binary and text data.',
