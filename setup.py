@@ -15,6 +15,7 @@ else:
 setup(
     name='pyperclip3',
     version='0.1.1',
+    license='Apache',
     url='https://github.com/spyoungtech/pyperclip3',
     description='Cross-platform clipboard utilities supporting both binary and text data.',
     long_description=long_description,
@@ -26,7 +27,7 @@ setup(
     classifiers=[
         'Intended Audience :: Developers',
         'Programming Language :: Python',
-        'License :: OSI Approved :: MIT License',
+        'OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
