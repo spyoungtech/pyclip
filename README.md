@@ -2,6 +2,12 @@
 
 Cross-platform clipboard utilities supporting both binary and text data.
 
+Some key features include:
+
+- A cross-platform API (supports MacOS, Windows, Linux)
+- Can handle arbitrary binary data
+- On Windows, some additional [clipboard formats](https://docs.microsoft.com/en-us/windows/win32/dataxchg/standard-clipboard-formats) 
+are supported
 
 ## Installation
 
@@ -42,8 +48,24 @@ some-program | python -m pyperclip3 copy
 This library will implement functionality for several platforms and clipboard utilities. 
 
 - [x] MacOS (via `pbcopy`/`pbpaste`)
-- [ ] Windows (coming soon)
+- [x] Windows
 - [ ] Linux (xclip - coming soon)
 - [ ] Linux (xsel - coming soon)
 
 If there is a platform or utility not currently listed, please request it by creating an issue.
+
+## Platform specific notes/issues
+
+### Windows
+
+- On Windows, the `pywin32` package is required.
+- On Windows, additional clipboard formats are supported, including copying from a file 
+(like if you right-click copy from File Explorer)
+
+### MacOS
+
+There is a known issue that `pbcopy`/`pbpaste` do not support arbitrary binary data.
+
+### Linux
+
+Linux requires `xclip` or `xsel` to work. Install with your package manager, e.g. `sudo apt install ...`
