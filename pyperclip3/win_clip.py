@@ -59,18 +59,15 @@ class _Win32Clipboard:
             self._is_open = True
         except pywintypes.error as e:
             if e.winerror == 5:
-                print(time.time())
                 if _timeout:
                     if time.time() < _timeout:
                         time.sleep(0.001)
-                        print('retrying')
                         return self.open(_timeout=_timeout)
                     else:
                         raise
                 else:
                     t = time.time() + _TIMEOUT
                     time.sleep(0.001)
-                    print('retrying')
                     return self.open(_timeout=t)
         return self
 
@@ -100,7 +97,6 @@ class _Win32Clipboard:
                 if fmt == 0:
                     break
                 formats.append(fmt)
-        print(formats)
         return formats
 
     def __getattr__(self, item):
