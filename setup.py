@@ -7,10 +7,6 @@ extras = {'test': test_requirements}
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()
 
-if sys.platform == 'win32':
-    install_requires = ['pywin32']
-else:
-    install_requires = []
 
 setup(
     name='pyperclip3',
@@ -23,7 +19,9 @@ setup(
     author_email='spencer.young@spyoung.com',
     author='Spencer Young',
     packages=['pyperclip3'],
-    install_requires=install_requires,
+    install_requires=[
+        'pywin32 >= 1.0 ; platform_system=="Windows"',
+    ],
     classifiers=[
         'Intended Audience :: Developers',
         'Programming Language :: Python',
