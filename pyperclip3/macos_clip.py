@@ -94,11 +94,11 @@ class _PasteboardBackend(ClipboardBase):
 
     def copy(self, data: Union[str, bytes], encoding=None):
         if isinstance(data, bytes):
-            if encoding is not None:
-                warnings.warn("encoding specified with a bytes argument. "
-                              "Encoding option will be ignored. "
-                              "To remove this warning, omit the encoding parameter or specify it as None", stacklevel=2)
-            self.pb.set_contents(data, self._bytes_type)
+            try:
+                data = data.decode()
+                self.pb.set_contents(data)
+            except UnicodeDecodeError:
+                self.pb.set_contents(data, self._bytes_type)
         elif isinstance(data, str):
             self.pb.set_contents(data)
         else:
