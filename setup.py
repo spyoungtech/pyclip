@@ -2,7 +2,8 @@ from setuptools import setup
 from io import open
 import sys
 test_requirements = ['pytest']
-extras = {'test': test_requirements}
+extras = {'test': test_requirements,
+          'pasteboard': ['pasteboard < 0.3.2']}
 
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()
@@ -22,6 +23,7 @@ setup(
     install_requires=[
         'pywin32 >= 1.0 ; platform_system=="Windows"',
     ],
+    extras_require=extras,
     classifiers=[
         'Intended Audience :: Developers',
         'Programming Language :: Python',

@@ -21,7 +21,7 @@ import warnings
 logger = logging.getLogger(__name__)
 
 
-class MacOSClip(ClipboardBase):
+class _PBCopyPBPasteBackend(ClipboardBase):
     def __init__(self):
         self.pbcopy = shutil.which('pbcopy')
         self.pbpaste = shutil.which('pbpaste')
@@ -50,14 +50,7 @@ class MacOSClip(ClipboardBase):
                                     stderr=subprocess.PIPE,
                                     text=True, encoding=encoding)
         else:
-            warnings.warn(f"expected object of type str or bytes. got {type(data)}. Automatic conversion to str may result in undesired result. To remove this warning, convert your object to a string or bytes object first", stacklevel=2)
-            try:
-                data = str(data)  # try to blindly convert object to str... this might be bad
-                proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            except Exception as e:
-                tb = sys.exc_info()[2]
-                raise ClipboardException(f"Could not convert object to str: {data!r}.").with_traceback(tb)
-
+            raise TypeError(f"data argument must be of type str or bytes, not {type(data)}")
         stdout, stderr = proc.communicate(data)
         if proc.returncode != 0:
             raise ClipboardException(f"Copy failed. pbcopy returned code: {proc.returncode!r} "
@@ -93,5 +86,59 @@ class MacOSClip(ClipboardBase):
     def clear(self):
         self.copy(b'')
 
+class _PasteboardBackend(ClipboardBase):
+    def __init__(self):
+        import pasteboard
+        self.pb = pasteboard.Pasteboard()
+        self._bytes_type = pasteboard.PDF
+
+    def copy(self, data: Union[str, bytes], encoding=None):
+        if isinstance(data, bytes):
+            if encoding is not None:
+                warnings.warn("encoding specified with a bytes argument. "
+                              "Encoding option will be ignored. "
+                              "To remove this warning, omit the encoding parameter or specify it as None", stacklevel=2)
+            self.pb.set_contents(data, self._bytes_type)
+        elif isinstance(data, str):
+            self.pb.set_contents(data)
+        else:
+            raise TypeError(f"data argument must be of type str or bytes, not {type(data)}")
 
 
+    def paste(self, encoding=None, text=None, errors=None):
+        contents = self.pb.get_contents(self._bytes_type)
+        if contents is None:  # Data was not set as binary
+            contents = self.pb.get_contents()
+            if contents is None:
+                return b'' if not (encoding or text or errors) else ''
+            if not (encoding or text or errors):
+                contents = contents.encode()
+            return contents
+        else:  # found some binary contents
+            if not (encoding or text or errors):
+                return contents
+            else:
+                return contents.encode(encoding=encoding, errors=errors)
+
+    def clear(self):
+        self.copy('')
+
+class MacOSClip(ClipboardBase):
+    def __init__(self, _backend=None):
+        if _backend:
+            self.backend = _backend
+        else:
+            try:
+                import pasteboard
+                self.backend = _PasteboardBackend()
+            except ImportError:
+                self.backend = _PBCopyPBPasteBackend()
+
+    def copy(self, *args, **kwargs):
+        return self.backend.copy(*args, **kwargs)
+
+    def paste(self, *args, **kwargs):
+        return self.backend.paste(*args, **kwargs)
+
+    def clear(self):
+        return self.backend.clear()

@@ -16,7 +16,7 @@ jobs:
           architecture: 'x64'
 
       - name: install
-        run: python -m pip install --upgrade . && python -m pip install pytest coverage coveralls
+        run: python -m pip install --upgrade . && python -m pip install pytest coverage coveralls && pip install pasteboard --no-use-pep517
 
       - name: run tests
         env: # Or as an environment variable

@@ -24,16 +24,12 @@ class ClipboardSetupException(ClipboardException):
 class ClipboardBase(ABC):
     @abstractmethod
     def copy(self, data: Union[str, bytes], encoding=None):
-        return NotImplemented
+        return NotImplemented  # pragma: no cover
 
     @abstractmethod
     def paste(self, encoding=None, text=None, errors=None) -> Union[str, bytes]:
-        return NotImplemented
+        return NotImplemented  # pragma: no cover
 
     @abstractmethod
     def clear(self):
-        return NotImplemented
-
-    @property
-    def type(self):
-        return self.__class__.__name__
+        return NotImplemented  # pragma: no cover

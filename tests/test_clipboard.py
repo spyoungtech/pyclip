@@ -21,7 +21,7 @@ def test_copypaste_unicode():
     assert clip.paste().decode() == unicode
 
 
-@pytest.mark.xfail(sys.platform == 'darwin', reason="MacOS doesn't yet support arbitrary data", strict=True)
+@pytest.mark.xfail(sys.platform == 'darwin', reason="MacOS doesn't yet support arbitrary data")
 def test_copy_paste_arbitrary_data():
     import secrets
     randbytes = secrets.token_bytes(1024)
@@ -29,6 +29,37 @@ def test_copy_paste_arbitrary_data():
     assert clip.paste() == randbytes
 
 def test_clear():
+    clip.copy('foo')
+    assert clip.paste(), 'test setup failed; clipboard contents unexpectedly empty'
+    clip.clear()
+    data = clip.paste()
+    assert not data, f'clipboard contents unexpectly present: {repr(data)}'
+
+
+@pytest.mark.skipif(sys.platform != 'darwin', reason='This test is for MacOS only')
+def test_copypaste_pbcopy_backend():
+    from pyperclip3.macos_clip import _PBCopyPBPasteBackend, MacOSClip
+    backend = _PBCopyPBPasteBackend()
+    clip = MacOSClip(_backend=backend)
+    clip.copy('foo')
+    assert clip.paste()
+    assert clip.paste() == b'foo'
+    assert clip.paste(text=True) == 'foo'
+@pytest.mark.skipif(sys.platform != 'darwin', reason='This test is for MacOS only')
+def test_copypaste_unicode_pbcopy_backend():
+    from pyperclip3.macos_clip import _PBCopyPBPasteBackend, MacOSClip
+    backend = _PBCopyPBPasteBackend()
+    clip = MacOSClip(_backend=backend)
+    unicode = 'א ב ג ד ה ו ז ח ט י ך כ ל ם מ ן נ ס ע ף פ ץ צ ק ר ש ת װ ױ'
+    clip.copy(unicode)
+    assert clip.paste().decode() == unicode
+
+
+@pytest.mark.skipif(sys.platform != 'darwin', reason='This test is for MacOS only')
+def test_clear_pbcopy_backend():
+    from pyperclip3.macos_clip import _PBCopyPBPasteBackend, MacOSClip
+    backend = _PBCopyPBPasteBackend()
+    clip = MacOSClip(_backend=backend)
     clip.copy('foo')
     assert clip.paste(), 'test setup failed; clipboard contents unexpectedly empty'
     clip.clear()
