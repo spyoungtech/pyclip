@@ -18,7 +18,7 @@ import sys
 def _main(args):
     from pyperclip3 import copy, clear, paste
     if args.command == "copy":
-        copy(sys.stdin.read())
+        copy(sys.stdin.buffer.read())
     elif args.command == 'paste':
         sys.stdout.buffer.write(paste())
     elif args.command == 'clear':
