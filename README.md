@@ -17,6 +17,13 @@ Requires python 3.7+
 pip install pyperclip3
 ```
 
+On MacOS it's recommended to install the optional `pasteboard` package for 
+binary support.
+
+```bash
+pip install "pyperclip3[pasteboard]" --no-use-pep517
+```
+
 ## Usage
 
 pyperclip3 can be used in Python code
