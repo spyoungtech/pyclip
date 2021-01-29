@@ -22,5 +22,5 @@ jobs:
         env: # Or as an environment variable
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COVERALLS_PARALLEL: "true"
-        run: coverage run -m pytest -v && coveralls
+        run: coverage run -m pytest -v && coveralls --service=github
 
