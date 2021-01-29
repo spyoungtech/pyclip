@@ -31,16 +31,12 @@ class XclipClipboard(ClipboardBase):
             proc = subprocess.Popen(
                 args,
                 stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
                 encoding=encoding,
             )
         elif isinstance(data, str):
             proc = subprocess.Popen(
                 args,
                 stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
                 text=True,
                 encoding=encoding,
             )
