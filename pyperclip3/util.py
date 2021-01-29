@@ -22,5 +22,8 @@ def detect_clipboard():
     elif sys.platform == 'win32':
         from .win_clip import WindowsClipboard
         return WindowsClipboard()
+    elif sys.platform == 'linux':
+        from .xclip_clip import XclipClipboard
+        return XclipClipboard()
     else:
         raise ClipboardSetupException("No suitable clipboard found.")

@@ -7,6 +7,7 @@ except ImportError:
     import pyperclip3 as clip
 import pytest
 
+from unittest import mock
 
 def test_copypaste():
     clip.copy('foo')
@@ -65,3 +66,27 @@ def test_clear_pbcopy_backend():
     clip.clear()
     data = clip.paste()
     assert not data, f'clipboard contents unexpectly present: {repr(data)}'
+
+def test_cli():
+    from pyperclip3.cli import _main, main
+    args = ['pyperclip3', 'copy']
+    import io
+    stdin = io.BytesIO(b"foo")
+    class MockStdin:
+        def __init__(self, b):
+            self.buffer = io.BytesIO(b)
+    with mock.patch('sys.exit', new=lambda x: x):
+        with mock.patch('sys.argv', new=args), mock.patch('sys.stdin', new=MockStdin(b'foo')):
+            main()
+        args = ['pyperclip3', 'paste']
+        class MockStdout:
+            def __init__(self):
+                self.buffer = io.BytesIO()
+        stdout = MockStdout()
+        with mock.patch('sys.argv', new=args), mock.patch('sys.stdout', new=stdout):
+            main()
+        assert stdout.buffer.getvalue() == b'foo'
+        args = ['pyperclip3', 'clear']
+        with mock.patch('sys.argv', new=args):
+            main()
+        assert not clip.paste()
