@@ -43,14 +43,11 @@ python -m pyperclip3 copy < myfile.text
 some-program | python -m pyperclip3 copy
 ```
 
-## Status
-
-This library will implement functionality for several platforms and clipboard utilities. 
+This library implements functionality for several platforms and clipboard utilities. 
 
 - [x] MacOS
 - [x] Windows
-- [ ] Linux (xclip - coming soon)
-- [ ] Linux (xsel - coming soon)
+- [x] Linux (with `xclip`)
 
 If there is a platform or utility not currently listed, please request it by creating an issue.
 
@@ -58,7 +55,7 @@ If there is a platform or utility not currently listed, please request it by cre
 
 ### Windows
 
-- On Windows, the `pywin32` package is required.
+- On Windows, the `pywin32` package is installed as a requirement.
 - On Windows, additional clipboard formats are supported, including copying from a file 
 (like if you right-click copy from File Explorer)
 
@@ -71,4 +68,4 @@ data being lost on copy/paste. This backend may be removed in a future release.
 
 ### Linux
 
-Linux requires `xclip` or `xsel` to work. Install with your package manager, e.g. `sudo apt install ...`
+Linux requires `xclip` to work (which means you must also use X). Install with your package manager, e.g. `sudo apt install xclip`
