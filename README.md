@@ -17,13 +17,6 @@ Requires python 3.7+
 pip install pyperclip3
 ```
 
-On MacOS it's recommended to install the optional `pasteboard` package for 
-binary support.
-
-```bash
-pip install "pyperclip3[pasteboard]" --no-use-pep517
-```
-
 ## Usage
 
 pyperclip3 can be used in Python code
@@ -54,7 +47,7 @@ some-program | python -m pyperclip3 copy
 
 This library will implement functionality for several platforms and clipboard utilities. 
 
-- [x] MacOS (via `pbcopy`/`pbpaste`)
+- [x] MacOS
 - [x] Windows
 - [ ] Linux (xclip - coming soon)
 - [ ] Linux (xsel - coming soon)
@@ -71,17 +64,10 @@ If there is a platform or utility not currently listed, please request it by cre
 
 ### MacOS
 
-MacOS has support for multiple backends.
+MacOS has support for multiple backends. By default, the `pasteboard` package is used.
 
-For full support on MacOS, the `pasteboard` package needs to be installed. 
-This is the default backend when available. You can install this as an extra:
-
-```
-pip install pyperclip3[pasteboard] --no-use-pep517
-```
-
-As a fallback, `pbcopy`/`pbpaste` can be used as a backend, but do not support arbitrary binary data, which may lead to 
-data being lost on copy/paste.
+`pbcopy`/`pbpaste` can also be used as a backend, but does not support arbitrary binary data, which may lead to 
+data being lost on copy/paste. This backend may be removed in a future release.
 
 ### Linux
 
