@@ -1,4 +1,5 @@
 .\venv\Scripts\activate.ps1
+$Env:COVERALLS_PARALLEL = "true"
 coverage run -a -m pytest --junitxml=reports\pytestresults.xml
 if ($LastExitCode -ne 0) {
   $failure = 1
