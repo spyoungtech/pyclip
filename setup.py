@@ -2,8 +2,7 @@ from setuptools import setup
 from io import open
 import sys
 test_requirements = ['pytest']
-extras = {'test': test_requirements,
-          'pasteboard': ['pasteboard < 0.3.2']}
+extras = {'test': test_requirements}
 
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()
@@ -11,7 +10,7 @@ with open('README.md', encoding='utf-8') as f:
 
 setup(
     name='pyperclip3',
-    version='0.2.1',
+    version='0.3.0',
     license='Apache',
     url='https://github.com/spyoungtech/pyperclip3',
     description='Cross-platform clipboard utilities supporting both binary and text data.',
@@ -22,6 +21,7 @@ setup(
     packages=['pyperclip3'],
     install_requires=[
         'pywin32 >= 1.0 ; platform_system=="Windows"',
+        'pasteboard == 0.3.3 ; platform_system=="Darwin"',
     ],
     extras_require=extras,
     classifiers=[
