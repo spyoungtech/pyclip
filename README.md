@@ -43,7 +43,7 @@ python -m pyperclip3 copy < myfile.text
 some-program | python -m pyperclip3 copy
 ```
 
-Installing via pip also provides console script `pyclip`:
+Installing via pip also provides the console script `pyclip`:
 
 ```bash
 pyclip copy < my_file.txt
