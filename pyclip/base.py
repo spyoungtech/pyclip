@@ -11,6 +11,9 @@
 #     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
+"""
+Provides the abstract base class from which all clipboard implementations are derived.
+"""
 from abc import ABC, abstractmethod
 from typing import Union
 
@@ -22,8 +25,11 @@ class ClipboardSetupException(ClipboardException):
     ...
 
 class ClipboardBase(ABC):
+    """
+    Abstract base class for Clipboard implementations.
+    """
     @abstractmethod
-    def copy(self, data: Union[str, bytes], encoding=None):
+    def copy(self, data: Union[str, bytes], encoding: str = None):
         return NotImplemented  # pragma: no cover
 
     @abstractmethod

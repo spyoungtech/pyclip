@@ -11,7 +11,9 @@
 #     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
-
+"""
+Provides clipboard functionality for Windows via the ``pywin32`` package
+"""
 
 from typing import Union, Dict, Tuple, Any
 import os
@@ -40,6 +42,9 @@ class ClipboardNotTextFormatException(Exception):
     ...
 
 class _Win32Clipboard:
+    """
+    Class for handling lower level details of managing Windows Clipboard
+    """
     def __init__(self):
         self._clip = _win32clipboard
         self._is_open = False
@@ -120,7 +125,7 @@ class WindowsClipboard(ClipboardBase):
         implemented.extend(self._string_formats)
         return implemented
 
-    def copy(self, data, encoding=None):
+    def copy(self, data: Union[str, bytes], encoding=None):
         """Copy given string into system clipboard."""
         with self._clipboard as clip:
             clip.EmptyClipboard()  # we clear the clipboard to become the clipboard owner
@@ -130,7 +135,12 @@ class WindowsClipboard(ClipboardBase):
                 data = ctypes.create_string_buffer(data)
                 clip.SetClipboardData(1, data)
 
-    def clear(self):
+    def clear(self) -> None:
+        """
+        Clear the clipboard contents
+
+        :return:
+        """
         with self._clipboard as clip:
             clip.EmptyClipboard()
         return
@@ -156,7 +166,7 @@ class WindowsClipboard(ClipboardBase):
 
     def _get_all_formats(self) -> Dict[Tuple[int, str], Any]:
         """
-        This is just here for debugging purposes for now...
+        Unused. Useful for debugging.
 
         :return:
         """
@@ -175,9 +185,16 @@ class WindowsClipboard(ClipboardBase):
                     raise
         return d
 
-    def paste(self, encoding=None, text=None, errors=None) -> Union[str, bytes]:
+    def paste(self, encoding: str = None, text: bool = None, errors: str = None) -> Union[str, bytes]:
         """
-        Returns clipboard contents"""
+        Returns clipboard contents
+
+        :param encoding: same meaning as in ``bytes.encode``. Implies ``text=True``
+        :param text: if True, bytes object will be en
+        :param errors: same meaning as in ``bytes.encode``. Implies ``text=True``.
+        :return: clipboard contents. Return value is bytes by default
+            or str if any of ``encoding``, ``text``, or ``errors`` is provided.
+        """
         with self._clipboard as clip:
             format = clip.EnumClipboardFormats()
             if format == 0:
