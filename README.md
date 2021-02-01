@@ -1,4 +1,4 @@
-# pyperclip3
+# PyClip
 
 Cross-platform clipboard utilities supporting both binary and text data.
 
@@ -14,33 +14,39 @@ are supported
 Requires python 3.7+
 
 ```bash
-pip install pyperclip3
+pip install pyclip
 ```
 
 ## Usage
 
 pyperclip3 can be used in Python code
 ```python
-import pyperclip3
+import pyclip
 
-pyperclip3.copy("hello clipboard") # copy data to the clipboard
-cb_data = pyperclip3.paste() # retrieve clipboard contents 
+pyclip.copy("hello clipboard") # copy data to the clipboard
+cb_data = pyclip.paste() # retrieve clipboard contents 
 print(cb_data)
 
-pyperclip3.clear() # clears the clipboard contents
-assert not pyperclip3.paste()
+pyclip.clear() # clears the clipboard contents
+assert not pyclip.paste()
 ```
 
 Or a CLI
 
 ```bash
 # paste clipboard contents to stdout
-python -m pyperclip3 paste
+python -m pyclip paste
 
 # load contents to the clipboard from stdin
 python -m pyperclip3 copy < myfile.text
 # same as above, but pipe from another command
 some-program | python -m pyperclip3 copy
+```
+
+Installing via pip also provides the console script `pyclip`:
+
+```bash
+pyclip copy < my_file.txt
 ```
 
 This library implements functionality for several platforms and clipboard utilities. 
@@ -69,3 +75,8 @@ data being lost on copy/paste. This backend may be removed in a future release.
 ### Linux
 
 Linux requires `xclip` to work (which means you must also use X). Install with your package manager, e.g. `sudo apt install xclip`
+
+# Acknowledgements
+
+Big thanks to [Howard Mao](https://github.com/zhemao) for donating the PyClip project name on PyPI to 
+this project.
