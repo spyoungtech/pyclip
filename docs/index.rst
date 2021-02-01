@@ -6,6 +6,16 @@
 Welcome to the documantation for pyclip!
 ========================================
 
+To get started:
+
+.. code-block::
+
+    pip install pyclip
+
+
+Requires Python 3.7+
+
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
