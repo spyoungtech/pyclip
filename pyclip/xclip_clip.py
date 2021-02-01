@@ -11,7 +11,9 @@
 #     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
-
+"""
+Provides the clipboard functionality for Linux via ``xclip``
+"""
 import warnings
 
 from .base import ClipboardBase, ClipboardSetupException, ClipboardException
@@ -28,7 +30,14 @@ class XclipClipboard(ClipboardBase):
                 "xclip must be installed. " "Please install xclip using your system package manager"
             )
 
-    def copy(self, data: Union[str, bytes], encoding=None):
+    def copy(self, data: Union[str, bytes], encoding: str = None) -> None:
+        """
+        Copy data into the clipboard
+
+        :param data: the data to be copied to the clipboard. Can be str or bytes.
+        :param encoding: same meaning as in ``subprocess.Popen``.
+        :return: None
+        """
         args = [
             self.xclip,
             '-selection',
@@ -64,7 +73,16 @@ class XclipClipboard(ClipboardBase):
                 f"Stdout: {stdout!r}"
             )
 
-    def paste(self, encoding=None, text=None, errors=None):
+    def paste(self, encoding: str = None, text: bool = None, errors: str = None):
+        """
+        Retrieve data from the clipboard
+
+        :param encoding: same meaning as in ``subprocess.run``
+        :param text: same meaning as in ``subprocess.run``
+        :param errors: same meaning as in ``subprocess.run``
+        :return: the clipboard contents. return type is binary by default.
+            If any of ``encoding``, ``errors``, or ``text`` are specified, the result type is str
+        """
         args = [self.xclip, '-o', '-selection', 'clipboard']
         if encoding or text or errors:
             completed_proc = subprocess.run(
@@ -89,4 +107,9 @@ class XclipClipboard(ClipboardBase):
         return completed_proc.stdout
 
     def clear(self):
+        """
+        Clear the clipboard contents
+
+        :return:
+        """
         self.copy('')

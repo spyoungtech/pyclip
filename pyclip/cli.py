@@ -15,7 +15,7 @@ import argparse
 import sys
 
 
-def _main(args):
+def _main(args) -> int:
     from pyclip import copy, clear, paste
     if args.command == "copy":
         copy(sys.stdin.buffer.read())

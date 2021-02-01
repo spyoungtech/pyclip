@@ -1,0 +1,3 @@
+Sphinx==3.4.2
+sphinx-autodoc-typehints
+m2r2

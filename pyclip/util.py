@@ -12,10 +12,13 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 import sys
-from .base import ClipboardSetupException
+from .base import ClipboardSetupException, ClipboardBase
 
 
-def detect_clipboard():
+def detect_clipboard() -> ClipboardBase:
+    """
+    Determine what implementation to use based on ``sys.platform``
+    """
     if sys.platform == 'darwin':
         from .macos_clip import MacOSClip
         return MacOSClip()
