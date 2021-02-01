@@ -19,7 +19,7 @@ pip install pyclip
 
 ## Usage
 
-pyperclip3 can be used in Python code
+pyclip can be used in Python code
 ```python
 import pyclip
 
@@ -38,9 +38,9 @@ Or a CLI
 python -m pyclip paste
 
 # load contents to the clipboard from stdin
-python -m pyperclip3 copy < myfile.text
+python -m pyclip copy < myfile.text
 # same as above, but pipe from another command
-some-program | python -m pyperclip3 copy
+some-program | python -m pyclip copy
 ```
 
 Installing via pip also provides the console script `pyclip`:
