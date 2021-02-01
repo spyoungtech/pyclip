@@ -13,7 +13,6 @@
 #     limitations under the License.
 from .base import ClipboardBase, ClipboardException, ClipboardSetupException
 import subprocess
-import sys
 import shutil
 from typing import Union
 import logging

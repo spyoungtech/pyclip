@@ -16,7 +16,7 @@
 from typing import Union, Dict, Tuple, Any
 import os
 import ctypes
-from .base import ClipboardBase, ClipboardSetupException, ClipboardException
+from .base import ClipboardBase, ClipboardSetupException
 import warnings
 import time
 try:

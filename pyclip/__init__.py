@@ -14,7 +14,6 @@
 import sys
 from .util import detect_clipboard
 from .base import ClipboardSetupException
-import warnings
 
 try:
     DEFAULT_CLIPBOARD = detect_clipboard()
