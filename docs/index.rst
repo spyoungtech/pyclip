@@ -4,13 +4,14 @@
    contain the root `toctree` directive.
 
 Welcome to the documantation for pyclip!
-==================================
+========================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
    README
+   api/index
 
 Indices and tables
 ==================
