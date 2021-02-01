@@ -12,7 +12,7 @@ setup(
     name='pyclip',
     version='0.5.0',
     license='Apache',
-    url='https://github.com/spyoungtech/pyperclip3',
+    url='https://github.com/spyoungtech/pyclip',
     description='Cross-platform clipboard utilities supporting both binary and text data.',
     long_description=long_description,
     long_description_content_type="text/markdown",
