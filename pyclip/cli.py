@@ -16,7 +16,7 @@ import sys
 
 
 def _main(args):
-    from pyperclip3 import copy, clear, paste
+    from pyclip import copy, clear, paste
     if args.command == "copy":
         copy(sys.stdin.buffer.read())
     elif args.command == 'paste':
@@ -30,7 +30,7 @@ def _main(args):
 
 
 def main():
-    parser = argparse.ArgumentParser('pyperclip3')
+    parser = argparse.ArgumentParser('pyclip')
     subparsers = parser.add_subparsers(title='commands', dest='command', required=True, description='Valid commands')
     copy_parser = subparsers.add_parser('copy', help='Copy contents from stdin to the clipboard')
     paste_parser = subparsers.add_parser('paste', help='Output clipboard contents to stdout')

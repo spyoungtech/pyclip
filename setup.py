@@ -9,8 +9,8 @@ with open('README.md', encoding='utf-8') as f:
 
 
 setup(
-    name='pyperclip3',
-    version='0.4.0',
+    name='pyclip',
+    version='0.5.0',
     license='Apache',
     url='https://github.com/spyoungtech/pyperclip3',
     description='Cross-platform clipboard utilities supporting both binary and text data.',
@@ -18,7 +18,7 @@ setup(
     long_description_content_type="text/markdown",
     author_email='spencer.young@spyoung.com',
     author='Spencer Young',
-    packages=['pyperclip3'],
+    packages=['pyclip'],
     install_requires=[
         'pywin32 >= 1.0 ; platform_system=="Windows"',
         'pasteboard == 0.3.3 ; platform_system=="Darwin"',
@@ -33,6 +33,9 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
     ],
+    entry_points={
+        'console_scripts': ['pyclip = pyclip.cli:main']
+    },
     tests_require=test_requirements,
     keywords='pyperclip clipboard cross-platform binary bytes files'
 )
