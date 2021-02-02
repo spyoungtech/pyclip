@@ -16,7 +16,7 @@ jobs:
           architecture: 'x64'
 
       - name: install
-        run: python -m pip install --upgrade . && python -m pip install pytest coverage codecov && pip install .
+        run: python -m pip install --upgrade . && python -m pip install pytest "coverage<5" codecov && pip install .
 
       - name: run tests
         env: # Or as an environment variable
