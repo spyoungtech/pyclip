@@ -1,0 +1,25 @@
+language: python
+# cache: pip
+notifications:
+  email: false
+dist: xenial
+sudo: false
+python:
+  - 3.8
+
+addons:
+  apt:
+    packages:
+      - xclip
+
+services:
+  - xvfb
+
+install:
+  - python -m pip install --upgrade . && python -m pip install pytest coverage codecov && pip install .
+
+script:
+  - coverage run -m pytest
+
+after_success:
+  - codecov

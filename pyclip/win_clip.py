@@ -134,6 +134,8 @@ class WindowsClipboard(ClipboardBase):
             elif isinstance(data, bytes):
                 data = ctypes.create_string_buffer(data)
                 clip.SetClipboardData(1, data)
+            else:
+                raise TypeError(f"data must be str or bytes, not {type(data)}")
 
     def clear(self) -> None:
         """
@@ -164,7 +166,7 @@ class WindowsClipboard(ClipboardBase):
         with open(fname, 'rb') as f:
             return f.read()
 
-    def _get_all_formats(self) -> Dict[Tuple[int, str], Any]:
+    def _get_all_formats(self) -> Dict[Tuple[int, str], Any]:  # pragma: no cover
         """
         Unused. Useful for debugging.
 

@@ -90,3 +90,104 @@ def test_cli():
         with mock.patch('sys.argv', new=args):
             main()
         assert not clip.paste()
+    class fakeargs:
+        command = 'nonexistent'
+    r = _main(fakeargs)
+    assert r == 1
+
+@pytest.mark.skipif(sys.platform != 'darwin', reason='This test is for MacOS only')
+def test_pbcopy_missing_raises_error():
+    with mock.patch('shutil.which') as mock_which:
+        mock_which.return_value = None
+        from pyclip.macos_clip import _PBCopyPBPasteBackend, ClipboardSetupException
+        with pytest.raises(ClipboardSetupException):
+            c = _PBCopyPBPasteBackend()
+
+@pytest.mark.skipif(sys.platform != 'darwin', reason='This test is for MacOS only')
+def test_pbcopy_fallback():
+    with mock.patch.dict('sys.modules', {'pasteboard': None}):
+        from pyclip.macos_clip import MacOSClip, _PBCopyPBPasteBackend
+        c = MacOSClip()
+        assert isinstance(c.backend, _PBCopyPBPasteBackend)
+
+@pytest.mark.skipif(sys.platform != 'darwin', reason='This test is for MacOS only')
+def test_pasteboard_default():
+    from pyclip.macos_clip import MacOSClip, _PasteboardBackend
+    c = MacOSClip()
+    assert isinstance(c.backend, _PasteboardBackend)
+
+@pytest.mark.skipif(sys.platform != 'win32', reason='This test is for Windows only')
+def test_nopywin32_raises_exception():
+    with mock.patch.dict('sys.modules', {'win32clipboard': None, 'win32con': None}) as mock_modules:
+        # force package reload
+        del mock_modules['pyclip']
+        del mock_modules['pyclip.win_clip']
+        from pyclip.win_clip import WindowsClipboard, ClipboardSetupException
+        with pytest.raises(ClipboardSetupException):
+            c = WindowsClipboard()
+
+
+def test_copy_bad_type_raises_typeerror():
+    with pytest.raises(TypeError):
+        clip.copy({})
+
+
+@pytest.mark.skipif(sys.platform != 'linux', reason='This test is for Linux only')
+def test_xclip_missing_raises_error():
+    with mock.patch('shutil.which') as mock_which:
+        mock_which.return_value = None
+        from pyclip.xclip_clip import XclipClipboard, ClipboardSetupException
+        with pytest.raises(ClipboardSetupException):
+            c = XclipClipboard()
+
+
+def test_unknown_platform_raises_error():
+    from pyclip.util import detect_clipboard, ClipboardSetupException
+    with mock.patch('sys.platform', new='unknown'):
+        with pytest.raises(ClipboardSetupException):
+            c = detect_clipboard()
+
+class MockProcess:
+    def communicate(self, *args, **kwargs):
+        self.returncode = 1
+        return ('mock stdout', 'mock stderr')
+
+class MockPopen:
+    def __call__(self, *args, **kwargs):
+        return MockProcess()
+
+class MockCompletedProcess:
+    def __init__(self, *args, **kwargs):
+        self.returncode = 1
+        self.stdout = 'mock stdout'
+        self.stderr = 'mock stderr'
+
+class MockSubprocessRun:
+    def __call__(self, *args, **kwargs):
+        return MockCompletedProcess()
+
+
+
+@pytest.mark.skipif(sys.platform == 'win32', reason='Windows backend does not use subprocess')
+def test_subprocess_fails_raises_clipboardexception_copy():
+    from pyclip.base import ClipboardException
+    if sys.platform == 'darwin':
+        from pyclip.macos_clip import _PBCopyPBPasteBackend
+        clip = _PBCopyPBPasteBackend()
+    else:
+        import pyclip as clip
+    with mock.patch('subprocess.Popen', new=MockPopen()):
+        with pytest.raises(ClipboardException):
+            clip.copy('')
+
+@pytest.mark.skipif(sys.platform == 'win32', reason='Windows backend does not use subprocess')
+def test_subprocess_fails_raises_clipboardexception_paste():
+    from pyclip.base import ClipboardException
+    if sys.platform == 'darwin':
+        from pyclip.macos_clip import _PBCopyPBPasteBackend
+        clip = _PBCopyPBPasteBackend()
+    else:
+        import pyclip as clip
+    with mock.patch('subprocess.run', new=MockSubprocessRun()):
+        with pytest.raises(ClipboardException):
+            clip.paste()

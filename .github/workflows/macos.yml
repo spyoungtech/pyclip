@@ -16,11 +16,10 @@ jobs:
           architecture: 'x64'
 
       - name: install
-        run: python -m pip install --upgrade . && python -m pip install pytest coverage coveralls && pip install .
+        run: python -m pip install --upgrade . && python -m pip install pytest coverage codecov && pip install .
 
       - name: run tests
         env: # Or as an environment variable
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COVERALLS_PARALLEL: "true"
-        run: coverage run -m pytest -v && coveralls --service=github
-
+        run: coverage run -m pytest -v && codecov
