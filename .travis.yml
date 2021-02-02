@@ -12,6 +12,9 @@ addons:
     packages:
       - xclip
 
+services:
+  - xvfb
+
 install:
   - python -m pip install --upgrade . && python -m pip install pytest coverage codecov && pip install .
 
