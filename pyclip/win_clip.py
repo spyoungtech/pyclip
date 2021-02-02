@@ -134,6 +134,8 @@ class WindowsClipboard(ClipboardBase):
             elif isinstance(data, bytes):
                 data = ctypes.create_string_buffer(data)
                 clip.SetClipboardData(1, data)
+            else:
+                raise TypeError(f"data must be str or bytes, not {type(data)}")
 
     def clear(self) -> None:
         """

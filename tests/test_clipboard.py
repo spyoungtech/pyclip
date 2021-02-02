@@ -90,3 +90,49 @@ def test_cli():
         with mock.patch('sys.argv', new=args):
             main()
         assert not clip.paste()
+    class fakeargs:
+        command = 'nonexistent'
+    r = _main(fakeargs)
+    assert r == 1
+
+@pytest.mark.skipif(sys.platform != 'darwin', reason='This test is for MacOS only')
+def test_pbcopy_missing_raises_error():
+    with mock.patch('shutil.which') as mock_which:
+        mock_which.return_value = None
+        from pyclip.macos_clip import _PBCopyPBPasteBackend, ClipboardSetupException
+        with pytest.raises(ClipboardSetupException):
+            c = _PBCopyPBPasteBackend()
+
+@pytest.mark.skipif(sys.platform != 'darwin', reason='This test is for MacOS only')
+def test_pbcopy_fallback():
+    with mock.patch.dict('sys.modules', {'pasteboard': None}):
+        from pyclip.macos_clip import MacOSClip, _PBCopyPBPasteBackend
+        c = MacOSClip()
+        assert isinstance(c.backend, _PBCopyPBPasteBackend)
+
+@pytest.mark.skipif(sys.platform != 'darwin', reason='This test is for MacOS only')
+def test_pasteboard_default():
+    from pyclip.macos_clip import MacOSClip, _PasteboardBackend
+    c = MacOSClip()
+    assert isinstance(c.backend, _PasteboardBackend)
+
+@pytest.mark.skipif(sys.platform != 'win32', reason='This test is for Windows only')
+def test_nopywin32_raises_exception():
+    with mock.patch.dict('sys.modules', {'pywin32': None}):
+        from pyclip.win_clip import WindowsClipboard, ClipboardSetupException
+        with pytest.raises(ClipboardSetupException):
+            c = WindowsClipboard()
+
+
+def test_copy_bad_type_raises_typeerror():
+    with pytest.raises(TypeError):
+        clip.copy({})
+
+
+@pytest.mark.skipif(sys.platform != 'linux', reason='This test is for Linux only')
+def test_xclip_missing_raises_error():
+    with mock.patch('shutil.which') as mock_which:
+        mock_which.return_value = None
+        from pyclip.xclip_clip import XclipClipboard, ClipboardSetupException
+        with pytest.raises(ClipboardSetupException):
+            c = XclipClipboard()
