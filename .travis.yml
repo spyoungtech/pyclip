@@ -19,7 +19,7 @@ install:
   - python -m pip install --upgrade . && python -m pip install pytest coverage codecov && pip install .
 
 script:
-  - python -m pytest
+  - coverage run -m pytest
 
 after_success:
   - codecov
