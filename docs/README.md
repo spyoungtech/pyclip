@@ -2,6 +2,14 @@
 
 Cross-platform clipboard utilities supporting both binary and text data.
 
+[![Docs](https://readthedocs.org/projects/pyclip/badge/?version=latest)](https://pyclip.readthedocs.io/en/latest/?badge=latest)
+![Build](https://img.shields.io/github/checks-status/spyoungtech/pyclip/main?label=build) 
+![Coverage](https://img.shields.io/codecov/c/gh/spyoungtech/pyclip/main) 
+![PyPI Version](https://img.shields.io/pypi/v/pyclip?color=blue)
+![Python Versions](https://img.shields.io/pypi/pyversions/pyclip) 
+[![Download Stats](https://pepy.tech/badge/pyclip)](https://pepy.tech/project/pyclip)
+
+
 Some key features include:
 
 - A cross-platform API (supports MacOS, Windows, Linux)
