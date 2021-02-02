@@ -1,6 +1,6 @@
 .\venv\Scripts\activate.ps1
 $Env:COVERALLS_PARALLEL = "true"
-coverage run -a -m pytest --junitxml=coverage.xml
+coverage run -m pytest
 if ($LastExitCode -ne 0) {
   $failure = 1
 } else {
