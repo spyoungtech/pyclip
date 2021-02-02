@@ -164,7 +164,7 @@ class WindowsClipboard(ClipboardBase):
         with open(fname, 'rb') as f:
             return f.read()
 
-    def _get_all_formats(self) -> Dict[Tuple[int, str], Any]:
+    def _get_all_formats(self) -> Dict[Tuple[int, str], Any]:  # pragma: no cover
         """
         Unused. Useful for debugging.
 
