@@ -139,3 +139,55 @@ def test_xclip_missing_raises_error():
         from pyclip.xclip_clip import XclipClipboard, ClipboardSetupException
         with pytest.raises(ClipboardSetupException):
             c = XclipClipboard()
+
+
+def test_unknown_platform_raises_error():
+    from pyclip.util import detect_clipboard, ClipboardSetupException
+    with mock.patch('sys.platform', new='unknown'):
+        with pytest.raises(ClipboardSetupException):
+            c = detect_clipboard()
+
+class MockProcess:
+    def communicate(self, *args, **kwargs):
+        self.returncode = 1
+        return ('mock stdout', 'mock stderr')
+
+class MockPopen:
+    def __call__(self, *args, **kwargs):
+        return MockProcess()
+
+class MockCompletedProcess:
+    def __init__(self, *args, **kwargs):
+        self.returncode = 1
+        self.stdout = 'mock stdout'
+        self.stderr = 'mock stderr'
+
+class MockSubprocessRun:
+    def __call__(self, *args, **kwargs):
+        return MockCompletedProcess()
+
+
+
+@pytest.mark.skipif(sys.platform == 'win32', reason='Windows backend does not use subprocess')
+def test_subprocess_fails_raises_clipboardexception_copy():
+    from pyclip.base import ClipboardException
+    if sys.platform == 'darwin':
+        from pyclip.macos_clip import _PBCopyPBPasteBackend
+        clip = _PBCopyPBPasteBackend()
+    else:
+        import pyclip as clip
+    with mock.patch('subprocess.Popen', new=MockPopen()):
+        with pytest.raises(ClipboardException):
+            clip.copy('')
+
+@pytest.mark.skipif(sys.platform == 'win32', reason='Windows backend does not use subprocess')
+def test_subprocess_fails_raises_clipboardexception_paste():
+    from pyclip.base import ClipboardException
+    if sys.platform == 'darwin':
+        from pyclip.macos_clip import _PBCopyPBPasteBackend
+        clip = _PBCopyPBPasteBackend()
+    else:
+        import pyclip as clip
+    with mock.patch('subprocess.run', new=MockSubprocessRun()):
+        with pytest.raises(ClipboardException):
+            clip.paste()
