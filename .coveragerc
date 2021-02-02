@@ -1,3 +1,3 @@
 [run]
 branch = True
-source = pyperclip3
+source = pyclip
