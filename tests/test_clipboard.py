@@ -118,7 +118,10 @@ def test_pasteboard_default():
 
 @pytest.mark.skipif(sys.platform != 'win32', reason='This test is for Windows only')
 def test_nopywin32_raises_exception():
-    with mock.patch.dict('sys.modules', {'win32clipboard': None, 'win32con': None}):
+    with mock.patch.dict('sys.modules', {'win32clipboard': None, 'win32con': None}) as mock_modules:
+        # force package reload
+        del mock_modules['pyclip']
+        del mock_modules['pyclip.win_clip']
         from pyclip.win_clip import WindowsClipboard, ClipboardSetupException
         with pytest.raises(ClipboardSetupException):
             c = WindowsClipboard()
