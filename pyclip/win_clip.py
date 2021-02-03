@@ -27,7 +27,7 @@ try:
 except ImportError:
     _win32clipboard = None
     _win32con = None
-
+import pathlib
 _TIMEOUT = 0.05
 
 _CF_FORMATS = {
@@ -125,8 +125,10 @@ class WindowsClipboard(ClipboardBase):
         implemented.extend(self._string_formats)
         return implemented
 
-    def copy(self, data: Union[str, bytes], encoding=None):
+    def copy(self, data: Union[str, bytes, pathlib.Path], encoding=None):
         """Copy given string into system clipboard."""
+        if isinstance(data, pathlib.Path):
+            return self.copy_file(data)
         with self._clipboard as clip:
             clip.EmptyClipboard()  # we clear the clipboard to become the clipboard owner
             if isinstance(data, str):
@@ -136,6 +138,16 @@ class WindowsClipboard(ClipboardBase):
                 clip.SetClipboardData(1, data)
             else:
                 raise TypeError(f"data must be str or bytes, not {type(data)}")
+
+    def copy_file(self, path: Union[pathlib.Path, str]):
+        path = pathlib.Path(path)
+        with self._clipboard as clip:
+            clip.EmptyClipboard()
+            # WARNING THIS CRASHES!!!
+            # https://docs.microsoft.com/en-us/windows/win32/shell/clipboard#cf_hdrop
+            # Paths are to be provided in a double null-terminated array
+            data = bytes(path.absolute()) + b'\0\0'
+            clip.SetClipboardData(_win32clipboard.CF_HDROP, data)
 
     def clear(self) -> None:
         """
