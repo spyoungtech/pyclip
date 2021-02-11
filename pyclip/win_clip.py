@@ -93,15 +93,17 @@ class _Win32Clipboard:
         return self._clip.GetClipboardFormatName(fmt)
 
     def _enumerate_clipboard_formats(self):
+        """
+        Clipboard must already be open to use this!
+        """
         formats = []
-        with self as clip:
-            fmt = clip.EnumClipboardFormats()
+        fmt = self._clip.EnumClipboardFormats()
+        formats.append(fmt)
+        while True:
+            fmt = self._clip.EnumClipboardFormats(fmt)
+            if fmt == 0:
+                break
             formats.append(fmt)
-            while True:
-                fmt = clip.EnumClipboardFormats(fmt)
-                if fmt == 0:
-                    break
-                formats.append(fmt)
         return formats
 
     def __getattr__(self, item):
@@ -206,14 +208,13 @@ class WindowsClipboard(ClipboardBase):
                     return b''
             if format not in _CF_FORMATS:
                 all_formats = self._clipboard._enumerate_clipboard_formats()
-                acceptable_formats = [f for f in all_formats if f in _CF_FORMATS]
+                acceptable_formats = [f for f in all_formats if f in self._implemented_formats]
                 if not acceptable_formats:
                     raise UnparsableClipboardFormatException("Clipboard contents have no standard formats available. "
                                                     "The contents can only be understood by a private program")
                 if (text or encoding or errors) and format not in self._string_formats:
                     raise ClipboardNotTextFormatException("Clipboard has no text formats available, but text options "
                                                           "were specified.")
-
                 format = max(acceptable_formats)
 
             d = clip.GetClipboardData(format)
