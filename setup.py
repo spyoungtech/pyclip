@@ -4,13 +4,13 @@ import sys
 test_requirements = ['pytest']
 extras = {'test': test_requirements}
 
-with open('README.md', encoding='utf-8') as f:
+with open('docs/README.md', encoding='utf-8') as f:
     long_description = f.read()
 
 
 setup(
     name='pyclip',
-    version='0.5.3',
+    version='0.5.4',
     license='Apache',
     url='https://github.com/spyoungtech/pyclip',
     description='Cross-platform clipboard utilities supporting both binary and text data.',
