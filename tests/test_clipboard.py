@@ -29,6 +29,24 @@ def test_copy_paste_arbitrary_data():
     clip.copy(randbytes)
     assert clip.paste() == randbytes
 
+def test_copy_paste_null_bytes_in_body():
+    import secrets
+    randbytes = secrets.token_bytes(1024)
+
+    data_body = b'somedata\x00\x00'+randbytes
+    clip.copy(data_body)
+    assert clip.paste() == data_body
+
+
+def test_copy_paste_null_terminated_bytes():
+    import secrets
+    randbytes = secrets.token_bytes(1024)
+
+    data_body = b'somedata\x00\x00'+randbytes + b'\x00\x00'
+    clip.copy(data_body)
+    assert clip.paste() == data_body
+
+
 def test_clear():
     clip.copy('foo')
     assert clip.paste(), 'test setup failed; clipboard contents unexpectedly empty'

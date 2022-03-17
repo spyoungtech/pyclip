@@ -123,7 +123,7 @@ class WindowsClipboard(ClipboardBase):
 
     @property
     def _implemented_formats(self):
-        implemented = [15]
+        implemented = [15, 11]
         implemented.extend(self._string_formats)
         return implemented
 
@@ -135,7 +135,7 @@ class WindowsClipboard(ClipboardBase):
                 clip.SetClipboardText(data, 13)
             elif isinstance(data, bytes):
                 data = ctypes.create_string_buffer(data)
-                clip.SetClipboardData(1, data)
+                clip.SetClipboardData(11, data)
             else:
                 raise TypeError(f"data must be str or bytes, not {type(data)}")
 
@@ -149,7 +149,12 @@ class WindowsClipboard(ClipboardBase):
             clip.EmptyClipboard()
         return
 
+    def _handle_dibv5(self, data):
+        return data[:-1]
+
     def _handle_format(self, fmt, data):
+        if fmt == 11:
+            return self._handle_dibv5(data)
         if fmt == 15:
             return self._handle_hdrop(data)
         else:
@@ -221,13 +226,7 @@ class WindowsClipboard(ClipboardBase):
             if format not in self._string_formats and format in self._implemented_formats:
                 return self._handle_format(format, d)
 
-        if isinstance(d, bytes) and (text or encoding or errors):
-            if format in self._string_formats:
-                d = d.rstrip(b'\x00')  # string formats are null-terminated
-            encoding = encoding or 'utf-8'
-            errors = errors or 'strict'
-            d = d.decode(errors=errors, encoding=encoding)
-        elif isinstance(d, str):
+        if isinstance(d, str):
             if format in self._string_formats:
                 d = d.rstrip('\x00')  # string formats are null-terminated
             if not (text or encoding or errors):
