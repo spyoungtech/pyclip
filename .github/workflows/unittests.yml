@@ -2,7 +2,7 @@ on: [push, pull_request]
 
 jobs:
   test_macos_clipboard:
-    name: test clipboard functionality on macos
+    name: test clipboard functionality
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -28,10 +28,12 @@ jobs:
 
       - name: start-xvfb
         if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: sudo Xvfb :99 -screen 0 640x480x8 -nolisten tcp &
+        run: |
+          sudo Xvfb :99 -screen 0 640x480x8 -nolisten tcp &
 
       - name: run tests
         env: # Or as an environment variable
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COVERALLS_PARALLEL: "true"
+          DISPLAY: ":99"
         run: coverage run -m pytest -v && codecov
