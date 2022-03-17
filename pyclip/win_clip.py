@@ -226,13 +226,7 @@ class WindowsClipboard(ClipboardBase):
             if format not in self._string_formats and format in self._implemented_formats:
                 return self._handle_format(format, d)
 
-        if isinstance(d, bytes) and (text or encoding or errors):
-            if format in self._string_formats:
-                d = d.rstrip(b'\x00')  # string formats are null-terminated
-            encoding = encoding or 'utf-8'
-            errors = errors or 'strict'
-            d = d.decode(errors=errors, encoding=encoding)
-        elif isinstance(d, str):
+        if isinstance(d, str):
             if format in self._string_formats:
                 d = d.rstrip('\x00')  # string formats are null-terminated
             if not (text or encoding or errors):
