@@ -13,9 +13,9 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: install-xvfb
+      - name: install-ubuntu
         if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: sudo apt update && sudo apt install -y xvfb
+        run: sudo apt update && sudo apt install -y xvfb xclip
 
       - name: setup python
         uses: actions/setup-python@v2
