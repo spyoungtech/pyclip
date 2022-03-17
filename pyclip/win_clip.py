@@ -123,7 +123,7 @@ class WindowsClipboard(ClipboardBase):
 
     @property
     def _implemented_formats(self):
-        implemented = [15]
+        implemented = [15, 11]
         implemented.extend(self._string_formats)
         return implemented
 
@@ -135,7 +135,7 @@ class WindowsClipboard(ClipboardBase):
                 clip.SetClipboardText(data, 13)
             elif isinstance(data, bytes):
                 data = ctypes.create_string_buffer(data)
-                clip.SetClipboardData(1, data)
+                clip.SetClipboardData(11, data)
             else:
                 raise TypeError(f"data must be str or bytes, not {type(data)}")
 
@@ -149,7 +149,12 @@ class WindowsClipboard(ClipboardBase):
             clip.EmptyClipboard()
         return
 
+    def _handle_dibv5(self, data):
+        return data.rstrip(b'\x00\x00')
+
     def _handle_format(self, fmt, data):
+        if fmt == 11:
+            return self._handle_dibv5(data)
         if fmt == 15:
             return self._handle_hdrop(data)
         else:
