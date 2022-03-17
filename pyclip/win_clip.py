@@ -150,7 +150,7 @@ class WindowsClipboard(ClipboardBase):
         return
 
     def _handle_dibv5(self, data):
-        return data.rstrip(b'\x00\x00')
+        return data[:-1]
 
     def _handle_format(self, fmt, data):
         if fmt == 11:
