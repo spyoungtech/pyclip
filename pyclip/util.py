@@ -12,6 +12,7 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 import sys
+import os
 from .base import ClipboardSetupException, ClipboardBase
 
 
@@ -25,6 +26,9 @@ def detect_clipboard() -> ClipboardBase:
     elif sys.platform == 'win32':
         from .win_clip import WindowsClipboard
         return WindowsClipboard()
+    elif sys.platform == 'linux' and os.environ.get("WAYLAND_DISPLAY"):
+        from .wayland_clip import WaylandClipboard
+        return WaylandClipboard()
     elif sys.platform == 'linux':
         from .xclip_clip import XclipClipboard
         return XclipClipboard()

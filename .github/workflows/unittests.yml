@@ -1,21 +1,37 @@
 on: [push, pull_request]
 
+env:
+  XDG_RUNTIME_DIR: "/tmp/github-workflows"
+
 jobs:
-  test_macos_clipboard:
+  test_clipboard:
     name: test clipboard functionality
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [macos-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            display_server: xorg
+            xorg_display: :99
+          - os: ubuntu-latest
+            display_server: wayland
+            wayland_display: wayland-0
 
     steps:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: install-ubuntu
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+      - name: install-ubuntu-xorg
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.display_server == 'xorg' }}
         run: sudo apt update && sudo apt install -y xvfb xclip
+
+      - name: install-ubuntu-wayland
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.display_server == 'wayland' }}
+        run: |
+          sudo apt update
+          sudo apt install -y --no-install-recommends --no-install-suggests kwin-wayland kwin-wayland-backend-virtual wl-clipboard
 
       - name: setup python
         uses: actions/setup-python@v2
@@ -26,16 +42,23 @@ jobs:
       - name: install
         run: python -m pip install --upgrade . && python -m pip install pytest coverage coveralls && pip install .
 
-      - name: start-xvfb
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+      - name: start xvfb
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.display_server == 'xorg' }}
         run: |
-          sudo Xvfb :99 -screen 0 640x480x8 -nolisten tcp &
+          sudo Xvfb ${{ matrix.xorg_display }} -screen 0 640x480x8 -nolisten tcp &
+
+      - name: start kwin_wayland
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.display_server == 'wayland' }}
+        run: |
+          mkdir -p $XDG_RUNTIME_DIR
+          kwin_wayland --virtual &
 
       - name: run tests
         env: # Or as an environment variable
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COVERALLS_PARALLEL: "true"
-          DISPLAY: ":99"
+          DISPLAY: ${{ matrix.xorg_display }}
+          WAYLAND_DISPLAY: ${{ matrix.wayland_display }}
         run: coverage run -m pytest -vv
 
       - name: Coveralls

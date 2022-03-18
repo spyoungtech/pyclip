@@ -63,7 +63,8 @@ This library implements functionality for several platforms and clipboard utilit
 
 - [x] MacOS
 - [x] Windows
-- [x] Linux (with `xclip`)
+- [x] Linux on x11 (with `xclip`)
+- [x] Linux on wayland (with `wl-clipboard`)
 
 If there is a platform or utility not currently listed, please request it by creating an issue.
 
@@ -84,7 +85,8 @@ data being lost on copy/paste. This backend may be removed in a future release.
 
 ### Linux
 
-Linux requires `xclip` to work (which means you must also use X). Install with your package manager, e.g. `sudo apt install xclip`
+Linux on X11 requires `xclip` to work. Install with your package manager, e.g. `sudo apt install xclip`
+Linux on Wayland requires `wl-clipboard` to work. Install with your package manager, e.g. `sudo apt install wl-clipboard`
 
 # Acknowledgements
 
