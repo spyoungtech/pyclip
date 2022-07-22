@@ -1,13 +1,18 @@
-import sys, os
+import os
+import secrets
+import subprocess
+import sys
+from unittest import mock
+
+import pytest
+
 try:
     import pyclip as clip
 except ImportError:
     # XXX: probably shouldn't do this, but oh well ¯\_(ツ)_/¯
     sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
     import pyclip as clip
-import pytest
 
-from unittest import mock
 
 def test_copypaste():
     clip.copy('foo')
@@ -24,13 +29,11 @@ def test_copypaste_unicode():
 
 @pytest.mark.xfail(sys.platform == 'darwin', reason="MacOS doesn't yet support arbitrary data")
 def test_copy_paste_arbitrary_data():
-    import secrets
     randbytes = secrets.token_bytes(1024)
     clip.copy(randbytes)
     assert clip.paste() == randbytes
 
 def test_copy_paste_null_bytes_in_body():
-    import secrets
     randbytes = secrets.token_bytes(1024)
 
     data_body = b'somedata\x00\x00'+randbytes
@@ -39,7 +42,6 @@ def test_copy_paste_null_bytes_in_body():
 
 
 def test_copy_paste_null_terminated_bytes():
-    import secrets
     randbytes = secrets.token_bytes(1024)
 
     data_body = b'somedata\x00\x00'+randbytes + b'\x00\x00'
@@ -158,6 +160,24 @@ def test_xclip_missing_raises_error():
         with pytest.raises(ClipboardSetupException):
             c = XclipClipboard()
 
+
+@pytest.mark.skipif(sys.platform != 'linux', reason='This test is for Linux only')
+@pytest.mark.parametrize('targets, expected', [
+    (["TARGETS", "TIMESTAMP", "image/png"], ["-t", "image/png"]),
+    ([], []),
+    (["TARGETS", "TIMESTAMP", "text/plain"], ["-t", "text/plain"]),
+    (["text/html", "TARGETS", "TIMESTAMP", "text/plain"], ["-t", "text/plain"]),
+])
+def test_xclip_with_target(targets, expected):
+    with mock.patch.object(subprocess, 'check_output', return_value="\n".join(targets)):
+        with mock.patch.object(subprocess, 'run', wraps=subprocess.run) as wrapped_run:
+            data = secrets.token_bytes(10)
+            clip.copy(data)
+            assert clip.paste() == data
+            
+    # the expected target was selected
+    args = wrapped_run.call_args[0][0]
+    assert args[1:] == ['-o', '-selection', 'clipboard'] + expected
 
 def test_unknown_platform_raises_error():
     from pyclip.util import detect_clipboard, ClipboardSetupException

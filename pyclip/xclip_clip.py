@@ -14,12 +14,12 @@
 """
 Provides the clipboard functionality for Linux via ``xclip``
 """
-import warnings
-
-from .base import ClipboardBase, ClipboardSetupException, ClipboardException
-from typing import Union
 import shutil
 import subprocess
+import warnings
+from typing import Union
+
+from .base import ClipboardBase, ClipboardException, ClipboardSetupException
 
 
 class XclipClipboard(ClipboardBase):
@@ -94,8 +94,19 @@ class XclipClipboard(ClipboardBase):
                 encoding=encoding,
             )
         else:
+            # retrieve the available targets and selects the first mime type available or plain text. 
+            available_targets = [
+                t for t in subprocess.check_output(args + ['-t', 'TARGETS'], text=True).splitlines() if t.islower()
+            ]
+            if "text/plain" in available_targets:
+                target = ["-t", "text/plain"]
+            elif available_targets:
+                target = ["-t", available_targets[0]]
+            else:
+                target = []
+
             completed_proc = subprocess.run(
-                args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                args + target, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
 
         if completed_proc.returncode != 0:
