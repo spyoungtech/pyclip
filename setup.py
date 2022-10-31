@@ -10,7 +10,7 @@ with open('docs/README.md', encoding='utf-8') as f:
 
 setup(
     name='pyclip',
-    version='0.6.0',
+    version='0.7.0',
     license='Apache',
     url='https://github.com/spyoungtech/pyclip',
     description='Cross-platform clipboard utilities supporting both binary and text data.',
