@@ -161,7 +161,7 @@ def test_xclip_missing_raises_error():
             c = XclipClipboard()
 
 
-@pytest.mark.skipif(sys.platform != 'linux', reason='This test is for Linux only')
+@pytest.mark.skipif(sys.platform != 'linux' or os.environ.get("WAYLAND_DISPLAY", "") != "", reason='This test is for Xorg only')
 @pytest.mark.parametrize('targets, expected', [
     (["TARGETS", "TIMESTAMP", "image/png"], ["-t", "image/png"]),
     ([], []),
