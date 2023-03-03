@@ -10,17 +10,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: setup python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: 3.9
 
-    - name: build
+    - name: Build wheel and sdist
       shell: bash
       run: |
-        python -m pip install --upgrade wheel setuptools
-        python setup.py sdist bdist_wheel
+        python -m pip install --upgrade setuptools pipx 'build[virtualenv]'
+        pipx run build
     - name: Release PyPI
       shell: bash
       env:

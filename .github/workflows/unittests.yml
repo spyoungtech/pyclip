@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: install-ubuntu-xorg
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.display_server == 'xorg' }}
@@ -34,13 +34,15 @@ jobs:
           sudo apt install -y --no-install-recommends --no-install-suggests kwin-wayland kwin-wayland-backend-virtual wl-clipboard
 
       - name: setup python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.8'
           architecture: 'x64'
 
       - name: install
-        run: python -m pip install --upgrade . && python -m pip install pytest coverage coveralls && pip install .
+        run: |
+          python -m pip install --upgrade .
+          pip install .[test]
 
       - name: start xvfb
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.display_server == 'xorg' }}
@@ -53,13 +55,15 @@ jobs:
           mkdir -p $XDG_RUNTIME_DIR
           kwin_wayland --virtual &
 
-      - name: run tests
+      - name: Run tests with coverage
         env: # Or as an environment variable
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COVERALLS_PARALLEL: "true"
           DISPLAY: ${{ matrix.xorg_display }}
           WAYLAND_DISPLAY: ${{ matrix.wayland_display }}
-        run: coverage run -m pytest -vv
+        run: |
+          pip install --upgrade coverage
+          coverage run -m pytest -vv
 
       - name: Coveralls
         env:

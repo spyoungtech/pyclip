@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyclip"
+version = "0.7"
+requires-python = ">=3.7"
+license = {text = "Apache"}
+authors = [{name = "Spencer Young", email = "spencer.young@spyoung.com"}]
+description = "Cross-platform clipboard utilities supporting both binary and text data."
+readme = {file = "README.md",content-type = "text/markdown"}
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Utilities",
+]
+keywords = ["clipboard", "copy", "paste", "binary", "text"]
+dependencies = [
+   "pywin32 >= 1.0; platform_system=='Windows'",
+   "pasteboard == 0.3.3; platform_system=='Darwin'",
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[project.urls]
+repository = "https://github.com/spyoungtech/pyclip"
+
+[project.scripts]
+pyclip = "pyclip:main"
+
+[tool.setuptools]
+packages = ["pyclip"]
